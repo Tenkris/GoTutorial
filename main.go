@@ -56,12 +56,15 @@ func main() {
 	app.Use(jwtware.New(jwtware.Config{
 		SigningKey: []byte(secretKey),
 	}))
+
 	books = append(books, Book{ID: 1, Title: "Golang pointers", Author: "Mr. Golang"})
 	books = append(books, Book{ID: 2, Title: "Goroutines", Author: "Mr. Goroutine"})
 	books = append(books, Book{ID: 3, Title: "Golang routers", Author: "Mr. Router"})
 	app.Use(loggingMiddleware)
 	app.Get("/api/v1/books", getBooks)
 	app.Get("/api/v1/book/:id", getBook)
+
+	app.Use(IsAdmin)
 	app.Post("/api/v1/book", createBook)
 	app.Put("/api/v1/book/:id", updateBook)
 	app.Delete("/api/v1/book/:id", deleteBook)

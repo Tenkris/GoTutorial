@@ -53,3 +53,10 @@ func login(secretKey string) fiber.Handler {
 		return c.JSON(fiber.Map{"token": t})
 	}
 }
+func IsAdmin(c *fiber.Ctx) error {
+	user := c.Locals("user").(*jwt.Token)
+	if user == nil || user.Claims.(jwt.MapClaims)["admin"] != true {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
+	return c.Next()
+}
