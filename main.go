@@ -7,6 +7,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	jwtware "github.com/gofiber/jwt/v2"
 	"github.com/joho/godotenv"
 )
 
@@ -41,10 +42,19 @@ func main() {
 		panic("Error loading .env file")
 	}
 
+	// Get secret key from environment
+	secretKey := os.Getenv("SECRET_KEY")
+
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*", // Adjust this to be more restrictive if needed
 		AllowMethods: "GET,POST,HEAD,PUT,DELETE,PATCH",
 		AllowHeaders: "Origin, Content-Type, Accept",
+	}))
+
+	app.Post("/login", login(secretKey))
+
+	app.Use(jwtware.New(jwtware.Config{
+		SigningKey: []byte(secretKey),
 	}))
 	books = append(books, Book{ID: 1, Title: "Golang pointers", Author: "Mr. Golang"})
 	books = append(books, Book{ID: 2, Title: "Goroutines", Author: "Mr. Goroutine"})
